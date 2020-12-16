@@ -1,0 +1,6 @@
+#ifndef BESS_UTILS_XPASS_CONFIG_H_
+#define BESS_UTILS_XPASS_CONFIG_H_
+
+#define XPASS_BYTES 14
+
+#endif

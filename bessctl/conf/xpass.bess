@@ -1,0 +1,40 @@
+import scapy.all as scapy
+import gdx_host_config
+
+host_ip_addrs = gdx_host_config.host_setup()
+
+host_if1 = VPort(ifname="bess_xe1", ip_addrs=[host_ip_addrs[0]])
+host_if2 = VPort(ifname="bess_xe2", ip_addrs=[host_ip_addrs[1]])
+
+nic_if1 = PMDPort(port_id=0)
+nic_if2 = PMDPort(port_id=1)
+
+# Port 1
+p_host_in_0::PortInc(port=host_if1)
+p_host_out_0::PortOut(port=host_if1)
+p_nic_in_0::PortInc(port=nic_if1)
+p_nic_out_0::PortOut(port=nic_if1)
+xpass_core_0::XPassCore()
+
+# p_host_in_0 -> 0:xpass_core_0
+p_host_in_0 -> TSO() -> 0:xpass_core_0
+p_nic_in_0 -> 1:xpass_core_0
+# xpass_core_0:0 -> p_host_out_0
+xpass_core_0:0 -> LRO() -> p_host_out_0
+xpass_core_0:1 -> p_nic_out_0
+
+
+
+# Port 2
+p_host_in_1::PortInc(port=host_if2)
+p_host_out_1::PortOut(port=host_if2)
+p_nic_in_1::PortInc(port=nic_if2)
+p_nic_out_1::PortOut(port=nic_if2)
+xpass_core_1::XPassCore()
+
+# p_host_in_1 -> 0:xpass_core_1
+p_host_in_1 -> TSO() -> 0:xpass_core_1
+p_nic_in_1 -> 1:xpass_core_1
+# xpass_core_1:0 -> p_host_out_1
+xpass_core_1:0 -> LRO() -> p_host_out_1
+xpass_core_1:1 -> p_nic_out_1

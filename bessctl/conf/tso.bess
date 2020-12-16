@@ -1,0 +1,18 @@
+import scapy.all as scapy
+import gdx_host_config
+
+host_ip_addrs = gdx_host_config.host_setup()
+
+host_if1 = VPort(ifname="bess_xe1", ip_addrs=[host_ip_addrs[0]])
+host_if2 = VPort(ifname="bess_xe2", ip_addrs=[host_ip_addrs[1]])
+
+nic_if1 = PMDPort(port_id=0)
+nic_if2 = PMDPort(port_id=1)
+
+# Port 1
+PortInc(port=host_if1) -> TSO() -> PortOut(port=nic_if1)
+PortInc(port=nic_if1) ->  LRO() -> PortOut(port=host_if1)
+
+# Port 2
+PortInc(port=host_if2) -> TSO() -> PortOut(port=nic_if2)
+PortInc(port=nic_if2) -> LRO() ->  PortOut(port=host_if2)
